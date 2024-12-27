@@ -28,12 +28,51 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            pictureBoxCanvas = new PictureBox();
+            buttonAddClass = new Button();
+            ((System.ComponentModel.ISupportInitialize)pictureBoxCanvas).BeginInit();
+            SuspendLayout();
+            // 
+            // pictureBoxCanvas
+            // 
+            pictureBoxCanvas.Dock = DockStyle.Fill;
+            pictureBoxCanvas.Location = new Point(0, 0);
+            pictureBoxCanvas.Name = "pictureBoxCanvas";
+            pictureBoxCanvas.Size = new Size(800, 450);
+            pictureBoxCanvas.TabIndex = 0;
+            pictureBoxCanvas.TabStop = false;
+            pictureBoxCanvas.Paint += pictureBoxCanvas_Paint;
+            pictureBoxCanvas.MouseClick += pictureBoxCanvas_MouseClick;
+            pictureBoxCanvas.MouseDown += pictureBoxCanvas_MouseDown;
+            pictureBoxCanvas.MouseMove += pictureBoxCanvas_MouseMove;
+            pictureBoxCanvas.MouseUp += pictureBoxCanvas_MouseUp;
+            // 
+            // buttonAddClass
+            // 
+            buttonAddClass.Location = new Point(646, 0);
+            buttonAddClass.Name = "buttonAddClass";
+            buttonAddClass.Size = new Size(154, 33);
+            buttonAddClass.TabIndex = 1;
+            buttonAddClass.Text = "ADD CLASS";
+            buttonAddClass.UseVisualStyleBackColor = true;
+            buttonAddClass.Click += buttonAddClass_Click;
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 450);
+            Controls.Add(buttonAddClass);
+            Controls.Add(pictureBoxCanvas);
+            Name = "Form1";
+            Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)pictureBoxCanvas).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private PictureBox pictureBoxCanvas;
+        private Button buttonAddClass;
     }
 }
