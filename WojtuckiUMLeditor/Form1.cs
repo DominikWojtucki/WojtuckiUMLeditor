@@ -2,18 +2,9 @@
 {
     public partial class Form1 : Form
     {
-
-        private List<Rectangle> Classes = new List<Rectangle>();
-
-        private int defaultX;
-        private int defaultY;
-        private int defaultWidth;
-        private int defaultHeight;
-
-        private Rectangle? selectedClass = null;
+        private List<UMLClass> Classes = new List<UMLClass>();
+        private UMLClass? selectedClass = null;
         private Point lastMousePosition;
-        private bool isDragging = false;
-
 
         public Form1()
         {
@@ -23,82 +14,88 @@
         private void pictureBoxCanvas_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-
-            foreach (var rect in Classes)
+            StringFormat stringFormat = new StringFormat
             {
+                Alignment = StringAlignment.Center,
+                LineAlignment = StringAlignment.Center
+            };
 
-                g.FillRectangle(Brushes.LightBlue, rect);
-                g.DrawRectangle(Pens.Black, rect);
+            foreach (var umlClass in Classes)
+            {
+                
+                g.FillRectangle(Brushes.LightBlue, umlClass.Bounds);
+                g.DrawRectangle(Pens.Black, umlClass.Bounds);
 
-                StringFormat stringFormat = new StringFormat
+                
+                g.DrawString(umlClass.Name, new Font("Arial", 12), Brushes.Black, umlClass.Bounds, stringFormat);
+                
+                int lineY = umlClass.Bounds.Y + 50;               
+                                
+                int attributePadding = 5;  
+                int attributeHeight = umlClass.Attributes.Count * 15 + attributePadding * 2; 
+                
+                Rectangle attributeBounds = new Rectangle(
+                    umlClass.Bounds.X,
+                    lineY + attributePadding, 
+                    umlClass.Bounds.Width,
+                    attributeHeight
+                );
+
+                
+                g.FillRectangle(Brushes.White, attributeBounds);
+                g.DrawRectangle(Pens.Black, attributeBounds);
+
+                
+                int yOffset = lineY + attributePadding + 5; 
+                foreach (var attribute in umlClass.Attributes)
                 {
-                    Alignment = StringAlignment.Center, 
-                    LineAlignment = StringAlignment.Center 
-                };
-
-                g.DrawString("ClassName", new Font("Arial", 12), Brushes.Black, rect, stringFormat);
-
-                if (selectedClass != null)
-                {
-                    g.DrawRectangle(Pens.Red, selectedClass.Value);
+                    g.DrawString($"{attribute.Name}: {attribute.DataType}", new Font("Arial", 10), Brushes.Black, umlClass.Bounds.X + 5, yOffset);
+                    yOffset += 15; 
                 }
+               
+                if (selectedClass == umlClass)
+                {
+                    g.DrawRectangle(Pens.Red, umlClass.Bounds);
+                    g.DrawRectangle(Pens.Red, attributeBounds);
+                }
+
+                
             }
-            
         }
+
 
         private void buttonAddClass_Click(object sender, EventArgs e)
         {
-            defaultX = 50;
-            defaultY = 50;
-            defaultWidth = 100;
-            defaultHeight = 50;
-
-            Classes.Add(new Rectangle(defaultX, defaultY, defaultWidth, defaultHeight));
-
-            pictureBoxCanvas.Invalidate();
-        }
-
-        private void pictureBoxCanvas_MouseClick(object sender, MouseEventArgs e)
-        {
-            bool clickedOnClass = false;
-            
-            foreach (var rect in Classes)
+            using (var dialog = new AddClassForm())
             {
-                if (rect.Contains(e.Location)) 
+                if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    clickedOnClass = true;
-                    selectedClass = rect; 
-                    break;
+                    string className = dialog.ClassName;
+                    Rectangle bounds = new Rectangle(50, 50, 100, 50);
+                    Classes.Add(new UMLClass(bounds, className));
+                    pictureBoxCanvas.Invalidate();
                 }
             }
-
-            
-            if (!clickedOnClass)
-            {
-                selectedClass = null;
-            }
-
-            pictureBoxCanvas.Invalidate(); 
-
-
         }
+
 
         private void pictureBoxCanvas_MouseDown(object sender, MouseEventArgs e)
-        {            
+        {
+            selectedClass = null;
 
-            foreach (var rect in Classes)
+            foreach (var umlClass in Classes)
             {
-                if (rect.Contains(e.Location))
+                if (umlClass.Bounds.Contains(e.Location))
                 {
-                    selectedClass = rect;
+                    selectedClass = umlClass;
                     lastMousePosition = e.Location;
-                    isDragging = true;
                     break;
                 }
             }
 
             pictureBoxCanvas.Invalidate();
         }
+
 
         private void pictureBoxCanvas_MouseMove(object sender, MouseEventArgs e)
         {
@@ -107,44 +104,67 @@
                 int dx = e.X - lastMousePosition.X;
                 int dy = e.Y - lastMousePosition.Y;
 
-
-                var updatedRect = new Rectangle(
-                    selectedClass.Value.X + dx,
-                    selectedClass.Value.Y + dy,
-                    selectedClass.Value.Width,
-                    selectedClass.Value.Height
+                selectedClass.Bounds = new Rectangle(
+                    selectedClass.Bounds.X + dx,
+                    selectedClass.Bounds.Y + dy,
+                    selectedClass.Bounds.Width,
+                    selectedClass.Bounds.Height
                 );
-
-                Classes.Remove(selectedClass.Value);
-                Classes.Add(updatedRect);
-                selectedClass = updatedRect;
 
                 lastMousePosition = e.Location;
                 pictureBoxCanvas.Invalidate();
             }
         }
 
-        private void pictureBoxCanvas_MouseUp(object sender, MouseEventArgs e)
-        {
-            isDragging = false;
-        }
 
         private void buttonDeleteClass_Click(object sender, EventArgs e)
         {
+
+
+
             if (selectedClass != null)
             {
-                Classes.Remove(selectedClass.Value);
-                selectedClass = null;
-                pictureBoxCanvas.Invalidate();
-
+                var result = MessageBox.Show("Are you sure you want to delete this class?", "Delete confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);                
+                
+                if(result == DialogResult.Yes) 
+                {
+                    Classes.Remove(selectedClass);
+                    selectedClass = null;
+                    pictureBoxCanvas.Invalidate();
+                }              
+            
             }
             else
             {
                 MessageBox.Show("Vyberte třídu kliknutím na ni.", "Upozornění", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-
-
         }
-        
+
+        private void buttonExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void buttonAddAttribute_Click(object sender, EventArgs e)
+        {
+            if (selectedClass != null)
+            {
+                using (var dialog = new AddAttributeForm())
+                {
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string attributeName = dialog.AttributeName;
+                        string attributeDataType = dialog.AttributeDataType;
+                        selectedClass.AddAttribute(attributeName, attributeDataType);
+                        pictureBoxCanvas.Invalidate();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Vyberte třídu, do které chcete přidat atribut.", "Upozornění", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
     }
 }
+
