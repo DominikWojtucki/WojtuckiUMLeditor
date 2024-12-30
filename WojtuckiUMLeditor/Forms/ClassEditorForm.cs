@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WojtuckiUMLeditor.Entities;
+using WojtuckiUMLeditor.Forms;
 
 namespace WojtuckiUMLeditor
 {
@@ -29,7 +30,7 @@ namespace WojtuckiUMLeditor
                 if (editNameForm.ShowDialog() == DialogResult.OK)
                 {
                     selectedClass.Name = editNameForm.NewClassName;
-                    (Owner as Form1)?.InvalidateCanvas(); 
+                    (Owner as Form1)?.InvalidateCanvas();
                 }
             }
         }
@@ -50,11 +51,29 @@ namespace WojtuckiUMLeditor
             {
                 MessageBox.Show("Třída nemá žádné atributy.", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-        }                
+        }
 
         private void buttonClose_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void buttonEditMethod_Click(object sender, EventArgs e)
+        {
+            if (selectedClass.Methods.Count > 0)
+            {
+                using (var editMethodForm = new EditMethodForm(selectedClass))
+                {
+                    if (editMethodForm.ShowDialog() == DialogResult.OK)
+                    {
+                        (Owner as Form1)?.InvalidateCanvas();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Třída nemá žádné metody.", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
     }
 }

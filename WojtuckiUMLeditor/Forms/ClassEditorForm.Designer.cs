@@ -72,6 +72,7 @@
             buttonEditMethod.TabIndex = 6;
             buttonEditMethod.Text = "Edit Method";
             buttonEditMethod.UseVisualStyleBackColor = true;
+            buttonEditMethod.Click += buttonEditMethod_Click;
             // 
             // ClassEditorForm
             // 
