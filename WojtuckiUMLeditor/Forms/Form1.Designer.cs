@@ -34,6 +34,7 @@
             buttonDeleteClass = new Button();
             buttonExit = new Button();
             buttonAddAttribute = new Button();
+            buttonAddMethod = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBoxCanvas).BeginInit();
             SuspendLayout();
             // 
@@ -48,6 +49,7 @@
             pictureBoxCanvas.Paint += pictureBoxCanvas_Paint;
             pictureBoxCanvas.MouseDown += pictureBoxCanvas_MouseDown;
             pictureBoxCanvas.MouseMove += pictureBoxCanvas_MouseMove;
+            pictureBoxCanvas.MouseUp += pictureBoxCanvas_MouseUp;
             // 
             // buttonAddClass
             // 
@@ -61,16 +63,17 @@
             // 
             // buttonEditClass
             // 
-            buttonEditClass.Location = new Point(650, 124);
+            buttonEditClass.Location = new Point(649, 175);
             buttonEditClass.Name = "buttonEditClass";
             buttonEditClass.Size = new Size(150, 50);
             buttonEditClass.TabIndex = 2;
             buttonEditClass.Text = "EDIT CLASS";
             buttonEditClass.UseVisualStyleBackColor = true;
+            buttonEditClass.Click += buttonEditClass_Click;
             // 
             // buttonDeleteClass
             // 
-            buttonDeleteClass.Location = new Point(650, 180);
+            buttonDeleteClass.Location = new Point(650, 231);
             buttonDeleteClass.Name = "buttonDeleteClass";
             buttonDeleteClass.Size = new Size(150, 50);
             buttonDeleteClass.TabIndex = 3;
@@ -80,7 +83,7 @@
             // 
             // buttonExit
             // 
-            buttonExit.Location = new Point(650, 236);
+            buttonExit.Location = new Point(650, 400);
             buttonExit.Name = "buttonExit";
             buttonExit.Size = new Size(150, 50);
             buttonExit.TabIndex = 4;
@@ -98,11 +101,22 @@
             buttonAddAttribute.UseVisualStyleBackColor = true;
             buttonAddAttribute.Click += buttonAddAttribute_Click;
             // 
+            // buttonAddMethod
+            // 
+            buttonAddMethod.Location = new Point(649, 119);
+            buttonAddMethod.Name = "buttonAddMethod";
+            buttonAddMethod.Size = new Size(150, 50);
+            buttonAddMethod.TabIndex = 6;
+            buttonAddMethod.Text = "ADD METHOD";
+            buttonAddMethod.UseVisualStyleBackColor = true;
+            buttonAddMethod.Click += buttonAddMethod_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(buttonAddMethod);
             Controls.Add(buttonAddAttribute);
             Controls.Add(buttonExit);
             Controls.Add(buttonDeleteClass);
@@ -123,5 +137,6 @@
         private Button buttonDeleteClass;
         private Button buttonExit;
         private Button buttonAddAttribute;
+        private Button buttonAddMethod;
     }
 }
