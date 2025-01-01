@@ -55,13 +55,13 @@ namespace WojtuckiUMLeditor
                     lineY + attributePadding,
                     umlClass.Bounds.Width,
                     attributeHeight
-                );                
+                );
 
                 g.FillRectangle(Brushes.White, attributeBounds);
                 g.DrawRectangle(Pens.Black, attributeBounds);
 
 
-                int yOffset = lineY + attributePadding + 5;                
+                int yOffset = lineY + attributePadding + 5;
 
 
                 foreach (var attribute in umlClass.Attributes)
@@ -70,7 +70,7 @@ namespace WojtuckiUMLeditor
                     yOffset += 15;
                 }
 
-                int methodYOffset = umlClass.GetMethodsYOffset(); 
+                int methodYOffset = umlClass.GetMethodsYOffset();
                 Rectangle methodBounds = new Rectangle(umlClass.Bounds.X, methodYOffset, umlClass.Bounds.Width, umlClass.GetMethodsAreaHeight());
                 g.FillRectangle(Brushes.White, methodBounds);
                 g.DrawRectangle(Pens.Black, methodBounds);
@@ -151,7 +151,7 @@ namespace WojtuckiUMLeditor
                     resizeStartPoint = e.Location;
                 }
                 else if (e.Button == MouseButtons.Left)
-                {                    
+                {
                     int dx = e.X - lastMousePosition.X;
                     int dy = e.Y - lastMousePosition.Y;
                     selectedClass.Move(dx, dy);
@@ -232,7 +232,7 @@ namespace WojtuckiUMLeditor
         {
             if (selectedClass != null)
             {
-                using (var dialog = new AddMethodForm()) 
+                using (var dialog = new AddMethodForm())
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
@@ -247,6 +247,32 @@ namespace WojtuckiUMLeditor
             {
                 MessageBox.Show("Vyberte třídu, do které chcete přidat metodu.", "Upozornění", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+        }
+
+        private void buttonExportToPNG_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Filter = "PNG Image|*.png";
+                saveFileDialog.Title = "Save UML Diagram";
+                saveFileDialog.FileName = "UMLDiagram.png";
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    if (!string.IsNullOrWhiteSpace(saveFileDialog.FileName))
+                    {
+                        SaveToPNG(saveFileDialog.FileName);
+                    }
+                }
+            }            
+        }
+
+        private void SaveToPNG(string filePath)
+        {
+            Bitmap bitmap = new Bitmap(pictureBoxCanvas.Width, pictureBoxCanvas.Height);
+            pictureBoxCanvas.DrawToBitmap(bitmap, new Rectangle(0, 0, pictureBoxCanvas.Width, pictureBoxCanvas.Height));
+            bitmap.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
+            MessageBox.Show("UML diagram byl úspěšně exportován do PNG!", "Export dokončen", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

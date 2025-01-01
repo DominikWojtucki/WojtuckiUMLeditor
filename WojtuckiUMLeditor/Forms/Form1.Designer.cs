@@ -35,6 +35,7 @@
             buttonExit = new Button();
             buttonAddAttribute = new Button();
             buttonAddMethod = new Button();
+            buttonExportToPNG = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBoxCanvas).BeginInit();
             SuspendLayout();
             // 
@@ -111,11 +112,22 @@
             buttonAddMethod.UseVisualStyleBackColor = true;
             buttonAddMethod.Click += buttonAddMethod_Click;
             // 
+            // buttonExportToPNG
+            // 
+            buttonExportToPNG.Location = new Point(650, 287);
+            buttonExportToPNG.Name = "buttonExportToPNG";
+            buttonExportToPNG.Size = new Size(150, 50);
+            buttonExportToPNG.TabIndex = 7;
+            buttonExportToPNG.Text = "EXPORT TO PNG";
+            buttonExportToPNG.UseVisualStyleBackColor = true;
+            buttonExportToPNG.Click += buttonExportToPNG_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(buttonExportToPNG);
             Controls.Add(buttonAddMethod);
             Controls.Add(buttonAddAttribute);
             Controls.Add(buttonExit);
@@ -138,5 +150,6 @@
         private Button buttonExit;
         private Button buttonAddAttribute;
         private Button buttonAddMethod;
+        private Button buttonExportToPNG;
     }
 }
