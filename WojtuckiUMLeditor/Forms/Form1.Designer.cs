@@ -36,6 +36,7 @@
             buttonAddAttribute = new Button();
             buttonAddMethod = new Button();
             buttonExportToPNG = new Button();
+            buttonCreateRelation = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBoxCanvas).BeginInit();
             SuspendLayout();
             // 
@@ -122,11 +123,22 @@
             buttonExportToPNG.UseVisualStyleBackColor = true;
             buttonExportToPNG.Click += buttonExportToPNG_Click;
             // 
+            // buttonCreateRelation
+            // 
+            buttonCreateRelation.Location = new Point(650, 344);
+            buttonCreateRelation.Name = "buttonCreateRelation";
+            buttonCreateRelation.Size = new Size(150, 50);
+            buttonCreateRelation.TabIndex = 8;
+            buttonCreateRelation.Text = "CREATE RELATION";
+            buttonCreateRelation.UseVisualStyleBackColor = true;
+            buttonCreateRelation.Click += buttonCreateRelation_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(buttonCreateRelation);
             Controls.Add(buttonExportToPNG);
             Controls.Add(buttonAddMethod);
             Controls.Add(buttonAddAttribute);
@@ -151,5 +163,6 @@
         private Button buttonAddAttribute;
         private Button buttonAddMethod;
         private Button buttonExportToPNG;
+        private Button buttonCreateRelation;
     }
 }

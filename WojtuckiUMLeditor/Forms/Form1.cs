@@ -1,4 +1,5 @@
 ﻿using WojtuckiUMLeditor.Entities;
+using WojtuckiUMLeditor.Entities.WojtuckiUMLeditor.Entities;
 using WojtuckiUMLeditor.Forms;
 
 namespace WojtuckiUMLeditor
@@ -11,6 +12,8 @@ namespace WojtuckiUMLeditor
         private Point lastMousePosition;
         private bool isResizing = false;
         private Point resizeStartPoint;
+        private List<UMLRelation> Relations = new List<UMLRelation>();
+        private UMLClass? selectedClass2 = null;
 
 
 
@@ -82,12 +85,18 @@ namespace WojtuckiUMLeditor
                 }
 
 
-                if (selectedClass == umlClass)
+                if (selectedClass == umlClass || umlClass == selectedClass2)
                 {
                     g.DrawRectangle(Pens.Red, umlClass.Bounds);
                     g.DrawRectangle(Pens.Red, attributeBounds);
-                    g.DrawRectangle(Pens.Red, methodBounds);
+                    g.DrawRectangle(Pens.Red, methodBounds);                    
+                }                
+
+                foreach (var relation in Relations)
+                {
+                    relation.DrawRelationship(g);
                 }
+
 
 
             }
@@ -107,60 +116,85 @@ namespace WojtuckiUMLeditor
             }
         }
 
-
         private void pictureBoxCanvas_MouseDown(object sender, MouseEventArgs e)
         {
-            selectedClass = null;
-            isResizing = false;
+            if (!IsClickOnClass(e.Location))
+            {
+                selectedClass = null;
+                selectedClass2 = null;
+            }
+            else
+            {
+                // Logika pro výběr tříd
+                if (selectedClass == null)
+                {
+                    foreach (var umlClass in Classes)
+                    {
+                        if (umlClass.Bounds.Contains(e.Location))
+                        {
+                            selectedClass = umlClass;
+                            lastMousePosition = e.Location;
+                            break;
+                        }
+                    }
+                }
+                else if (selectedClass2 == null)
+                {
+                    foreach (var umlClass in Classes)
+                    {
+                        if (umlClass.Bounds.Contains(e.Location) && umlClass != selectedClass)
+                        {
+                            selectedClass2 = umlClass;
+                            break;
+                        }
+                    }
+                }
+                pictureBoxCanvas.Invalidate();
+            }
+        }
 
+        private bool IsClickOnClass(Point location)
+        {
             foreach (var umlClass in Classes)
             {
-                if (umlClass.Bounds.Contains(e.Location))
+                if (umlClass.Bounds.Contains(location))
                 {
-                    selectedClass = umlClass;
-                    lastMousePosition = e.Location;
-
-                    if (umlClass.IsMouseOverResizeHandle(e.Location))
-                    {
-                        isResizing = true;
-                        resizeStartPoint = e.Location;
-                    }
-                    break;
+                    return true;
                 }
             }
+            return false;
         }
 
         private void pictureBoxCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (selectedClass != null)
             {
-                if (isResizing)
-                {
-                    int dx = e.X - resizeStartPoint.X;
-                    int dy = e.Y - resizeStartPoint.Y;
-
-                    selectedClass.Resize(selectedClass.Bounds.Width + dx, selectedClass.Bounds.Height + dy);
-
-
-                    int newHeight = selectedClass.GetAttributesAreaHeight();
-                    if (newHeight > selectedClass.Bounds.Height)
-                    {
-                        selectedClass.Resize(selectedClass.Bounds.Width, newHeight);
-                    }
-
-                    resizeStartPoint = e.Location;
-                }
-                else if (e.Button == MouseButtons.Left)
+                // Přesouvání první třídy
+                if (e.Button == MouseButtons.Left && !isResizing)
                 {
                     int dx = e.X - lastMousePosition.X;
                     int dy = e.Y - lastMousePosition.Y;
-                    selectedClass.Move(dx, dy);
+
+                    selectedClass.Move(dx, dy);  // Metoda pro přesouvání třídy
+                    lastMousePosition = e.Location;
+                }
+            }
+
+            if (selectedClass2 != null)
+            {
+                // Přesouvání druhé třídy
+                if (e.Button == MouseButtons.Left && !isResizing)
+                {
+                    int dx = e.X - lastMousePosition.X;
+                    int dy = e.Y - lastMousePosition.Y;
+
+                    selectedClass2.Move(dx, dy);  // Metoda pro přesouvání druhé třídy
                     lastMousePosition = e.Location;
                 }
             }
 
             pictureBoxCanvas.Invalidate();
-        }
+        }        
 
         private void pictureBoxCanvas_MouseUp(object sender, MouseEventArgs e)
         {
@@ -176,6 +210,13 @@ namespace WojtuckiUMLeditor
 
                 if (result == DialogResult.Yes)
                 {
+                    var relationsToRemove = Relations.Where(r => r.FromClass == selectedClass || r.ToClass == selectedClass).ToList();
+
+                    foreach (var relation in relationsToRemove)
+                    {
+                        Relations.Remove(relation);
+                    }
+
                     Classes.Remove(selectedClass);
                     selectedClass = null;
                     pictureBoxCanvas.Invalidate();
@@ -264,7 +305,7 @@ namespace WojtuckiUMLeditor
                         SaveToPNG(saveFileDialog.FileName);
                     }
                 }
-            }            
+            }
         }
 
         private void SaveToPNG(string filePath)
@@ -274,6 +315,36 @@ namespace WojtuckiUMLeditor
             bitmap.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
             MessageBox.Show("UML diagram byl úspěšně exportován do PNG!", "Export dokončen", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+        private void buttonCreateRelation_Click(object sender, EventArgs e)
+        {
+            if (selectedClass != null && selectedClass2 != null)
+            {
+                using (var relationDialog = new RelationForm())
+                {
+                    if (relationDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        // Získání vybrané multiplicity (1 nebo *)
+                        string multiplicityEnd = relationDialog.MultiplicityEnd;   // například "*"
+
+                        // Vytvoření nového vztahu s vybraným typem a multiplicitou
+                        UMLRelation relation = new UMLRelation(selectedClass, selectedClass2, relationDialog.SelectedRelationType, multiplicityEnd);
+                        Relations.Add(relation);
+
+                        // Reset výběru tříd po přidání vztahu
+                        selectedClass = null;
+                        selectedClass2 = null;
+
+                        pictureBoxCanvas.Invalidate();
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Musíte vybrat dvě třídy pro vytvoření vztahu.", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
     }
 }
 

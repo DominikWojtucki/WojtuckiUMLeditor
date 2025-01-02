@@ -87,5 +87,10 @@ namespace WojtuckiUMLeditor.Entities
                     (mouseLocation.X >= Bounds.Right - resizeAreaSize && mouseLocation.X <= Bounds.Right &&
                     mouseLocation.Y <= Bounds.Top + resizeAreaSize && mouseLocation.Y >= Bounds.Top);
         }
+
+        public Point Center()
+        {
+            return new Point(Bounds.X + Bounds.Width / 2, Bounds.Y + Bounds.Height / 2);
+        }
     }
 }
