@@ -18,8 +18,6 @@ namespace WojtuckiUMLeditor
         private List<UMLRelation> Relations = new List<UMLRelation>();
         private UMLClass? selectedClass2 = null;
 
-
-
         public Form1()
         {
             InitializeComponent();
@@ -99,9 +97,6 @@ namespace WojtuckiUMLeditor
                 {
                     relation.DrawRelationship(g);
                 }
-
-
-
             }
         }
 
@@ -170,28 +165,26 @@ namespace WojtuckiUMLeditor
 
         private void pictureBoxCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (selectedClass != null)
-            {
-                // Přesouvání první třídy
+            if (selectedClass != null)            {
+                
                 if (e.Button == MouseButtons.Left && !isResizing)
                 {
                     int dx = e.X - lastMousePosition.X;
                     int dy = e.Y - lastMousePosition.Y;
 
-                    selectedClass.Move(dx, dy);  // Metoda pro přesouvání třídy
+                    selectedClass.Move(dx, dy);  
                     lastMousePosition = e.Location;
                 }
             }
 
             if (selectedClass2 != null)
-            {
-                // Přesouvání druhé třídy
+            {               
                 if (e.Button == MouseButtons.Left && !isResizing)
                 {
                     int dx = e.X - lastMousePosition.X;
                     int dy = e.Y - lastMousePosition.Y;
 
-                    selectedClass2.Move(dx, dy);  // Metoda pro přesouvání druhé třídy
+                    selectedClass2.Move(dx, dy);  
                     lastMousePosition = e.Location;
                 }
             }
@@ -326,15 +319,12 @@ namespace WojtuckiUMLeditor
                 using (var relationDialog = new RelationForm())
                 {
                     if (relationDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        // Získání vybrané multiplicity (1 nebo *)
-                        string multiplicityEnd = relationDialog.MultiplicityEnd;   // například "*"
-
-                        // Vytvoření nového vztahu s vybraným typem a multiplicitou
+                    {                        
+                        string multiplicityEnd = relationDialog.MultiplicityEnd;
+                                                
                         UMLRelation relation = new UMLRelation(selectedClass, selectedClass2, relationDialog.SelectedRelationType, multiplicityEnd);
                         Relations.Add(relation);
-
-                        // Reset výběru tříd po přidání vztahu
+                        
                         selectedClass = null;
                         selectedClass2 = null;
 

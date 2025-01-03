@@ -83,13 +83,11 @@ namespace WojtuckiUMLeditor.Forms
                 if (result == DialogResult.Yes)
                 {
                     selectedClass.Methods.Remove(selectedMethod);
-
-                    // Aktualizace listBoxu
+                    
                     listBoxMethods.DataSource = null;
                     listBoxMethods.DataSource = selectedClass.Methods;
                     listBoxMethods.DisplayMember = "Name";
-
-                    // Resetování vybraných polí
+                    
                     selectedMethod = null;
                     textBoxName.Text = string.Empty;
                     textBoxReturnType.Text = string.Empty;
