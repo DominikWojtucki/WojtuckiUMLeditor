@@ -37,6 +37,7 @@
             buttonAddMethod = new Button();
             buttonExportToPNG = new Button();
             buttonCreateRelation = new Button();
+            buttonLoadDiagram = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBoxCanvas).BeginInit();
             SuspendLayout();
             // 
@@ -45,7 +46,7 @@
             pictureBoxCanvas.Dock = DockStyle.Fill;
             pictureBoxCanvas.Location = new Point(0, 0);
             pictureBoxCanvas.Name = "pictureBoxCanvas";
-            pictureBoxCanvas.Size = new Size(800, 450);
+            pictureBoxCanvas.Size = new Size(800, 510);
             pictureBoxCanvas.TabIndex = 0;
             pictureBoxCanvas.TabStop = false;
             pictureBoxCanvas.Paint += pictureBoxCanvas_Paint;
@@ -55,7 +56,7 @@
             // 
             // buttonAddClass
             // 
-            buttonAddClass.Location = new Point(649, 12);
+            buttonAddClass.Location = new Point(649, 7);
             buttonAddClass.Name = "buttonAddClass";
             buttonAddClass.Size = new Size(150, 50);
             buttonAddClass.TabIndex = 1;
@@ -85,7 +86,7 @@
             // 
             // buttonExit
             // 
-            buttonExit.Location = new Point(650, 400);
+            buttonExit.Location = new Point(649, 455);
             buttonExit.Name = "buttonExit";
             buttonExit.Size = new Size(150, 50);
             buttonExit.TabIndex = 4;
@@ -95,7 +96,7 @@
             // 
             // buttonAddAttribute
             // 
-            buttonAddAttribute.Location = new Point(649, 68);
+            buttonAddAttribute.Location = new Point(650, 63);
             buttonAddAttribute.Name = "buttonAddAttribute";
             buttonAddAttribute.Size = new Size(150, 50);
             buttonAddAttribute.TabIndex = 5;
@@ -125,7 +126,7 @@
             // 
             // buttonCreateRelation
             // 
-            buttonCreateRelation.Location = new Point(650, 344);
+            buttonCreateRelation.Location = new Point(650, 343);
             buttonCreateRelation.Name = "buttonCreateRelation";
             buttonCreateRelation.Size = new Size(150, 50);
             buttonCreateRelation.TabIndex = 8;
@@ -133,11 +134,22 @@
             buttonCreateRelation.UseVisualStyleBackColor = true;
             buttonCreateRelation.Click += buttonCreateRelation_Click;
             // 
+            // buttonLoadDiagram
+            // 
+            buttonLoadDiagram.Location = new Point(650, 399);
+            buttonLoadDiagram.Name = "buttonLoadDiagram";
+            buttonLoadDiagram.Size = new Size(150, 50);
+            buttonLoadDiagram.TabIndex = 9;
+            buttonLoadDiagram.Text = "LOAD DIAGRAM";
+            buttonLoadDiagram.UseVisualStyleBackColor = true;
+            buttonLoadDiagram.Click += buttonLoadDiagram_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 510);
+            Controls.Add(buttonLoadDiagram);
             Controls.Add(buttonCreateRelation);
             Controls.Add(buttonExportToPNG);
             Controls.Add(buttonAddMethod);
@@ -164,5 +176,6 @@
         private Button buttonAddMethod;
         private Button buttonExportToPNG;
         private Button buttonCreateRelation;
+        private Button buttonLoadDiagram;
     }
 }

@@ -1,6 +1,9 @@
-﻿using WojtuckiUMLeditor.Entities;
+﻿using Newtonsoft.Json;
+using WojtuckiUMLeditor.Entities;
 using WojtuckiUMLeditor.Entities.WojtuckiUMLeditor.Entities;
 using WojtuckiUMLeditor.Forms;
+using WojtuckiUMLeditor.JSON;
+using Attribute = WojtuckiUMLeditor.Entities.Attribute;
 
 namespace WojtuckiUMLeditor
 {
@@ -89,8 +92,8 @@ namespace WojtuckiUMLeditor
                 {
                     g.DrawRectangle(Pens.Red, umlClass.Bounds);
                     g.DrawRectangle(Pens.Red, attributeBounds);
-                    g.DrawRectangle(Pens.Red, methodBounds);                    
-                }                
+                    g.DrawRectangle(Pens.Red, methodBounds);
+                }
 
                 foreach (var relation in Relations)
                 {
@@ -194,7 +197,7 @@ namespace WojtuckiUMLeditor
             }
 
             pictureBoxCanvas.Invalidate();
-        }        
+        }
 
         private void pictureBoxCanvas_MouseUp(object sender, MouseEventArgs e)
         {
@@ -344,6 +347,68 @@ namespace WojtuckiUMLeditor
                 MessageBox.Show("Musíte vybrat dvě třídy pro vytvoření vztahu.", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+        private void buttonLoadDiagram_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json",
+                Title = "Načíst UML diagram"
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {                    
+                    string json = File.ReadAllText(openFileDialog.FileName);
+                    
+                    var diagramData = JsonConvert.DeserializeObject<DiagramData>(json);
+                    
+                    Classes.Clear();
+                    Relations.Clear();
+                    
+                    foreach (var c in diagramData.Classes)
+                    {
+                        var bounds = new Rectangle(c.X, c.Y, c.Width, c.Height);
+                        UMLClass umlClass = new UMLClass(bounds, c.Name);
+                        
+                        foreach (var attr in c.Attributes)
+                        {
+                            umlClass.Attributes.Add(new Attribute(attr.Name, attr.Type));
+                        }
+                        
+                        foreach (var method in c.Methods)
+                        {
+                            umlClass.Methods.Add(new Method(method.Name, method.ReturnType));
+                        }
+
+                        Classes.Add(umlClass);
+                    }
+                    
+                    foreach (var r in diagramData.Relations)
+                    {
+                        UMLRelation relation = new UMLRelation(
+                            Classes[r.FromClassIndex],
+                            Classes[r.ToClassIndex],
+                            r.Type,
+                            r.Multiplicity
+                        );
+                        Relations.Add(relation);
+                    }
+                    
+                    pictureBoxCanvas.Invalidate();
+
+                    MessageBox.Show("Diagram byl úspěšně načten.", "Načteno", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Chyba při načítání: " + ex.Message, "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+
+
 
     }
 }
