@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Text;
 using WojtuckiUMLeditor.Entities;
 using WojtuckiUMLeditor.Entities.WojtuckiUMLeditor.Entities;
 using WojtuckiUMLeditor.Forms;
@@ -165,26 +166,27 @@ namespace WojtuckiUMLeditor
 
         private void pictureBoxCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (selectedClass != null)            {
-                
+            if (selectedClass != null)
+            {
+
                 if (e.Button == MouseButtons.Left && !isResizing)
                 {
                     int dx = e.X - lastMousePosition.X;
                     int dy = e.Y - lastMousePosition.Y;
 
-                    selectedClass.Move(dx, dy);  
+                    selectedClass.Move(dx, dy);
                     lastMousePosition = e.Location;
                 }
             }
 
             if (selectedClass2 != null)
-            {               
+            {
                 if (e.Button == MouseButtons.Left && !isResizing)
                 {
                     int dx = e.X - lastMousePosition.X;
                     int dy = e.Y - lastMousePosition.Y;
 
-                    selectedClass2.Move(dx, dy);  
+                    selectedClass2.Move(dx, dy);
                     lastMousePosition = e.Location;
                 }
             }
@@ -319,12 +321,12 @@ namespace WojtuckiUMLeditor
                 using (var relationDialog = new RelationForm())
                 {
                     if (relationDialog.ShowDialog() == DialogResult.OK)
-                    {                        
+                    {
                         string multiplicityEnd = relationDialog.MultiplicityEnd;
-                                                
+
                         UMLRelation relation = new UMLRelation(selectedClass, selectedClass2, relationDialog.SelectedRelationType, multiplicityEnd);
                         Relations.Add(relation);
-                        
+
                         selectedClass = null;
                         selectedClass2 = null;
 
@@ -349,24 +351,24 @@ namespace WojtuckiUMLeditor
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
-                {                    
+                {
                     string json = File.ReadAllText(openFileDialog.FileName);
-                    
+
                     var diagramData = JsonConvert.DeserializeObject<DiagramData>(json);
-                    
+
                     Classes.Clear();
                     Relations.Clear();
-                    
+
                     foreach (var c in diagramData.Classes)
                     {
                         var bounds = new Rectangle(c.X, c.Y, c.Width, c.Height);
                         UMLClass umlClass = new UMLClass(bounds, c.Name);
-                        
+
                         foreach (var attr in c.Attributes)
                         {
                             umlClass.Attributes.Add(new Attribute(attr.Name, attr.Type));
                         }
-                        
+
                         foreach (var method in c.Methods)
                         {
                             umlClass.Methods.Add(new Method(method.Name, method.ReturnType));
@@ -374,18 +376,27 @@ namespace WojtuckiUMLeditor
 
                         Classes.Add(umlClass);
                     }
-                    
+
                     foreach (var r in diagramData.Relations)
                     {
-                        UMLRelation relation = new UMLRelation(
-                            Classes[r.FromClassIndex],
-                            Classes[r.ToClassIndex],
-                            r.Type,
-                            r.Multiplicity
-                        );
-                        Relations.Add(relation);
+                        int fromClassIndex = Classes.FindIndex(c => c.Name == r.FromClass);
+                        int toClassIndex = Classes.FindIndex(c => c.Name == r.ToClass);
+
+                        if (fromClassIndex != -1 && toClassIndex != -1)
+                        {
+                            RelationType relationType = (RelationType)Enum.Parse(typeof(RelationType), r.Type);
+
+                            UMLRelation relation = new UMLRelation(
+                                Classes[fromClassIndex],
+                                Classes[toClassIndex],
+                                relationType,
+                                r.Multiplicity
+                            );
+
+                            Relations.Add(relation);
+                        }
                     }
-                    
+
                     pictureBoxCanvas.Invalidate();
 
                     MessageBox.Show("Diagram byl úspěšně načten.", "Načteno", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -398,6 +409,136 @@ namespace WojtuckiUMLeditor
         }
 
 
+        private void buttonSaveDiagram_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "JSON files (*.json)|*.json",
+                Title = "Uložit diagram jako JSON"
+            };
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    DiagramData diagramData = ExportDiagramToJson();
+                    string json = JsonConvert.SerializeObject(diagramData, Formatting.Indented);
+
+                    File.WriteAllText(saveFileDialog.FileName, json);
+                    MessageBox.Show("Diagram byl úspěšně uložen!", "Uloženo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Došlo k chybě při ukládání diagramu: {ex.Message}", "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private DiagramData ExportDiagramToJson()
+        {
+            DiagramData diagramData = new DiagramData
+            {
+                Classes = new List<DiagramClass>(),
+                Relations = new List<DiagramRelation>()
+            };
+
+            foreach (var umlClass in Classes)
+            {
+                var diagramClass = new DiagramClass
+                {
+                    Name = umlClass.Name,
+                    X = umlClass.Bounds.X,
+                    Y = umlClass.Bounds.Y,
+                    Width = umlClass.Bounds.Width,
+                    Height = umlClass.Bounds.Height,
+                    Attributes = new List<DiagramAttributes>(),
+                    Methods = new List<DiagramMethods>()
+                };
+
+                foreach (var attribute in umlClass.Attributes)
+                {
+                    diagramClass.Attributes.Add(new DiagramAttributes
+                    {
+                        Name = attribute.Name,
+                        Type = attribute.DataType
+                    });
+                }
+
+                foreach (var method in umlClass.Methods)
+                {
+                    diagramClass.Methods.Add(new DiagramMethods
+                    {
+                        Name = method.Name,
+                        ReturnType = method.ReturnType
+                    });
+                }
+
+                diagramData.Classes.Add(diagramClass);
+            }
+
+            foreach (var relation in Relations)
+            {
+                var relationData = new DiagramRelation
+                {
+                    FromClass = relation.FromClass.Name,
+                    ToClass = relation.ToClass.Name,
+                    Type = relation.Type.ToString(),
+                    Multiplicity = relation.Multiplicity
+                };
+
+                diagramData.Relations.Add(relationData);
+            }
+
+            return diagramData;
+        }
+
+        private void buttonGenerateCode_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                StringBuilder codeBuilder = new StringBuilder();
+
+                foreach (var umlClass in Classes)
+                {
+                    codeBuilder.AppendLine($"public class {umlClass.Name}");
+                    codeBuilder.AppendLine("{");
+
+                    foreach (var attribute in umlClass.Attributes)
+                    {
+                        codeBuilder.AppendLine($"    public {attribute.DataType} {attribute.Name} {{ get; set; }}");
+                    }
+
+                    foreach (var method in umlClass.Methods)
+                    {
+                        codeBuilder.AppendLine($"    public {method.ReturnType} {method.Name}()");
+                        codeBuilder.AppendLine("    {");
+                        codeBuilder.AppendLine("    ");
+                        codeBuilder.AppendLine("    }");
+                    }
+
+                    codeBuilder.AppendLine("}");
+                    codeBuilder.AppendLine();
+                }               
+
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "Text Files (*.txt)|*.txt",
+                    Title = "Uložit generovaný kód"
+                };
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string codeFilePath = saveFileDialog.FileName;
+                    File.WriteAllText(codeFilePath, codeBuilder.ToString());
+
+                    MessageBox.Show("Kód byl úspěšně vygenerován a uložen.", "Kód vygenerován", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Chyba při generování kódu: " + ex.Message, "Chyba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
 
     }

@@ -9,9 +9,9 @@ namespace WojtuckiUMLeditor.JSON
 {
     public class DiagramRelation
     {
-        public int FromClassIndex { get; set; }
-        public int ToClassIndex { get; set; }
-        public RelationType Type { get; set; }
+        public string FromClass { get; set; }
+        public string ToClass { get; set; }
+        public string Type { get; set; }
         public string Multiplicity { get; set; }
     }
 }

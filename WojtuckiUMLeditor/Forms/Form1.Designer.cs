@@ -38,6 +38,8 @@
             buttonExportToPNG = new Button();
             buttonCreateRelation = new Button();
             buttonLoadDiagram = new Button();
+            buttonSaveDiagram = new Button();
+            buttonGenerateCode = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBoxCanvas).BeginInit();
             SuspendLayout();
             // 
@@ -46,7 +48,7 @@
             pictureBoxCanvas.Dock = DockStyle.Fill;
             pictureBoxCanvas.Location = new Point(0, 0);
             pictureBoxCanvas.Name = "pictureBoxCanvas";
-            pictureBoxCanvas.Size = new Size(800, 510);
+            pictureBoxCanvas.Size = new Size(800, 614);
             pictureBoxCanvas.TabIndex = 0;
             pictureBoxCanvas.TabStop = false;
             pictureBoxCanvas.Paint += pictureBoxCanvas_Paint;
@@ -86,7 +88,7 @@
             // 
             // buttonExit
             // 
-            buttonExit.Location = new Point(649, 455);
+            buttonExit.Location = new Point(649, 564);
             buttonExit.Name = "buttonExit";
             buttonExit.Size = new Size(150, 50);
             buttonExit.TabIndex = 4;
@@ -136,7 +138,7 @@
             // 
             // buttonLoadDiagram
             // 
-            buttonLoadDiagram.Location = new Point(650, 399);
+            buttonLoadDiagram.Location = new Point(650, 453);
             buttonLoadDiagram.Name = "buttonLoadDiagram";
             buttonLoadDiagram.Size = new Size(150, 50);
             buttonLoadDiagram.TabIndex = 9;
@@ -144,11 +146,33 @@
             buttonLoadDiagram.UseVisualStyleBackColor = true;
             buttonLoadDiagram.Click += buttonLoadDiagram_Click;
             // 
+            // buttonSaveDiagram
+            // 
+            buttonSaveDiagram.Location = new Point(650, 399);
+            buttonSaveDiagram.Name = "buttonSaveDiagram";
+            buttonSaveDiagram.Size = new Size(150, 50);
+            buttonSaveDiagram.TabIndex = 10;
+            buttonSaveDiagram.Text = "SAVE DIAGRAM";
+            buttonSaveDiagram.UseVisualStyleBackColor = true;
+            buttonSaveDiagram.Click += buttonSaveDiagram_Click;
+            // 
+            // buttonGenerateCode
+            // 
+            buttonGenerateCode.Location = new Point(649, 508);
+            buttonGenerateCode.Name = "buttonGenerateCode";
+            buttonGenerateCode.Size = new Size(150, 50);
+            buttonGenerateCode.TabIndex = 11;
+            buttonGenerateCode.Text = "GENERATE CODE";
+            buttonGenerateCode.UseVisualStyleBackColor = true;
+            buttonGenerateCode.Click += buttonGenerateCode_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 510);
+            ClientSize = new Size(800, 614);
+            Controls.Add(buttonGenerateCode);
+            Controls.Add(buttonSaveDiagram);
             Controls.Add(buttonLoadDiagram);
             Controls.Add(buttonCreateRelation);
             Controls.Add(buttonExportToPNG);
@@ -177,5 +201,7 @@
         private Button buttonExportToPNG;
         private Button buttonCreateRelation;
         private Button buttonLoadDiagram;
+        private Button buttonSaveDiagram;
+        private Button buttonGenerateCode;
     }
 }
